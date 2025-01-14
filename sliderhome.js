@@ -1,4 +1,6 @@
-mmGlobal.add("(min-width: 800px)", () => {
+let mm = gsap.matchMedia();
+
+mm.add("(min-width: 800px)", () => {
 
   let img1 = document.querySelector(".img_projects-1");
   let img2 = document.querySelector(".img_projects-2");
@@ -270,7 +272,7 @@ mmGlobal.add("(min-width: 800px)", () => {
 
 });
 
-mmGlobalMobile.add("(max-width: 799px)", () => {
+mm.add("(max-width: 799px)", () => {
 
   let img1 = document.querySelector(".img_projects-1");
   let img2 = document.querySelector(".img_projects-2");
