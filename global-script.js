@@ -1,6 +1,3 @@
-let mmGlobal = gsap.matchMedia();
-let mmGlobalMobile = gsap.matchMedia();
-
 // Variables 
 let globalEase = CustomEase.create("globalEase", "M0,0 C0.504,0 0.1,1 1,1 ");
 
