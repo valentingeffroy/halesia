@@ -1,3 +1,7 @@
+/*
+Scripts globaux pour gestion du scroll avec Lenis + variables globales
+*/
+
 // Variables 
 let globalEase = CustomEase.create("globalEase", "M0,0 C0.504,0 0.1,1 1,1 ");
 
