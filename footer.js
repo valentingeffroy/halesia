@@ -1,3 +1,7 @@
+/*
+Animation composant [footer]
+*/
+
 let footer = document.querySelector(".global-footer");
 let footerLight = document.querySelector(".footer_logo");
 
