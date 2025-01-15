@@ -1,3 +1,7 @@
+/*
+Animation des customs tabs de la section "Expertises et services" 
+*/
+
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
 const tabSelector = document.querySelector('.tab-selector');
