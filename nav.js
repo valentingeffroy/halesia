@@ -1,8 +1,8 @@
-let mmNav = gsap.matchMedia();
-let mmNavMobile = gsap.matchMedia();
+/*
+Animation menu 
+*/
 
-//parallax
-new Ukiyo(".ukiyo")
+let mmNav = gsap.matchMedia();
 
 let menuOpen = document.querySelector(".menu-open_bg");
 let navIco = document.querySelector(".ico_logo-main");
@@ -18,8 +18,6 @@ let menuDivider = document.querySelector(".menu_divider");
 let navTL = gsap.timeline({ paused: true });
 
 mmNav.add("(min-width: 800px)", () => {
-
-  console.log("device: desktop");
 
   navTL.to(menuOpen, {
     autoAlpha: 1,
@@ -90,9 +88,7 @@ mmNav.add("(min-width: 800px)", () => {
 
 });
 
-mmNavMobile.add("(max-width: 799px)", () => {
-
-  console.log("device: mobile");
+mmNav.add("(max-width: 799px)", () => {
 
   navTL.to(menuOpen, {
     autoAlpha: 1,

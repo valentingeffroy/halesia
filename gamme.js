@@ -1,3 +1,7 @@
+/*
+Animation gsap des pages Gamme Performance et Architecture + effet parallax sur images.
+*/
+
 let mm = gsap.matchMedia();
 new Ukiyo(".ukiyo");
 

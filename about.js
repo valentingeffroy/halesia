@@ -1,3 +1,7 @@
+/*
+Animation gsap page /about 
+*/
+
 let counterWrap = document.querySelector('.datas-card_wrap');
 let countNumb = gsap.utils.toArray(document.querySelectorAll('.title-data'));
 let lastNumb = document.querySelectorAll('.title-data.is-green');
