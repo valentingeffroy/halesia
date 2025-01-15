@@ -1,3 +1,7 @@
+/*
+Animation gsap du slider catégories en bas de page /home  
+*/
+
 let mm = gsap.matchMedia();
 
 mm.add("(min-width: 800px)", () => {
