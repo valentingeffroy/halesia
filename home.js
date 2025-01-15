@@ -1,3 +1,7 @@
+/*
+Animation gsap page /home
+*/
+
 let mmHome = gsap.matchMedia();
 
 mmHome.add("(min-width: 800px)", () => {
@@ -130,14 +134,13 @@ mmHome.add("(max-width: 799px)", () => {
   let heroTopTitle = document.querySelector('.title-loop-t');
   let heroBotTitle = document.querySelector('.title-loop-b');
 
-  // Set initial states to prevent loading glitch
   gsap.set(heroTopTitle, {
     y: 0,
     autoAlpha: 1,
   });
   gsap.set(heroBotTitle, {
     y: 50,
-    autoAlpha: 0, // Assumed, since no opacity is set later for heroBotTitle
+    autoAlpha: 0, 
   });
 
   let heroTitleLoop = gsap.timeline({ repeat: -1, repeatDelay: 1 });
