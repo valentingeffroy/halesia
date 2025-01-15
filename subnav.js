@@ -1,4 +1,6 @@
-// Sub Nav
+/*
+Animation du cta du menu fixed, page gamme Performance/Architecture. 
+*/
 
 let subNav = document.querySelector('.subnav_btn');
 let subDot = document.querySelector('.subbtn_point');
