@@ -1,3 +1,7 @@
+/*
+Animation menu 
+*/
+
 let mmNav = gsap.matchMedia();
 
 let menuOpen = document.querySelector(".menu-open_bg");
