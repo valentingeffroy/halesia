@@ -1,3 +1,7 @@
+/*
+Animation du lecteur audio custom.
+*/
+
 const playerContainer = document.querySelector('.audio-player-container');
 const playPauseElement = playerContainer.querySelector('.lottie_playpause');
 const durationElement = playerContainer.querySelector('.lottie_duration');
