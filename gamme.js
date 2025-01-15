@@ -1,8 +1,7 @@
 let mm = gsap.matchMedia();
-new Ukiyo(".ukiyo")
+new Ukiyo(".ukiyo");
 
 mm.add("(min-width: 800px)", () => {
-
   // Gallery light
   let galleryComp = document.querySelector(".gamme-gallery_component");
   let galleryLight = document.querySelector(".pattern-bg.is-gallery");
@@ -13,40 +12,42 @@ mm.add("(min-width: 800px)", () => {
     scrollTrigger: {
       trigger: galleryComp,
       start: "top center",
-      toggleActions: 'play reverse play reverse',
-    }
-  })
+      toggleActions: "play reverse play reverse",
+    },
+  });
 
   // JS Section History
   let historySection = document.querySelector(".home-history_component");
-  let historyCards = gsap.utils.toArray(document.querySelectorAll(".history-card"));
+  let historyCards = gsap.utils.toArray(
+    document.querySelectorAll(".history-card")
+  );
 
   gsap.from(historyCards[0], {
     y: 200,
     scrollTrigger: {
       trigger: historySection,
-      start: 'top center',
+      start: "top center",
       scrub: 2,
-    }
-  })
+    },
+  });
 
   gsap.from(historyCards[1], {
     y: 100,
     scrollTrigger: {
       trigger: historySection,
-      start: 'top center',
+      start: "top center",
       scrub: 2,
-    }
-  })
+    },
+  });
 
   gsap.from(historyCards[2], {
     y: 50,
     scrollTrigger: {
       trigger: historySection,
-      start: 'top center',
+      start: "top center",
       scrub: 2,
-    }
-  })
+    },
+  });
 
   //
   let contactSection = document.querySelector(".section-global.is-contact");
@@ -58,48 +59,80 @@ mm.add("(min-width: 800px)", () => {
     ease: "globalEase",
     scrollTrigger: {
       trigger: contactSection,
-      start: 'top center',
-      toggleActions: 'play reverse play reverse',
-    }
-  })
-
+      start: "top center",
+      toggleActions: "play reverse play reverse",
+    },
+  });
 });
 
 // Gallery
-
-const nextButton = document.querySelector('#gallery-btn');
+const nextButton = document.querySelector("#gallery-btn");
 const images = gsap.utils.toArray(document.querySelectorAll(".gallery_img"));
 let currentIndex = 0;
 
-const galleryTl = gsap.timeline();
-
+// Configuration initiale
 gsap.set(images[0], {
   clipPath: "inset(0 0 0 0 round 8px)",
-  scale: 1
+  scale: 1,
+  zIndex: 1,
+});
+
+// Configuration initiale des autres images
+images.forEach((img, index) => {
+  if (index !== 0) {
+    gsap.set(img, {
+      clipPath: "inset(12.5% 50% 12.5% 50% round 8px)",
+      scale: 1,
+      zIndex: 0,
+    });
+  }
 });
 
 function showNext() {
-
-  gsap.set(images[currentIndex], {
-    clipPath: "inset(30% 50% 30% 50% round 8px)",
-    scale: 0.9
-  });
-
+  const currentImage = images[currentIndex];
   currentIndex = (currentIndex + 1) % images.length;
+  const nextImage = images[currentIndex];
 
-  galleryTl.to(images[currentIndex],
-  {
-    scale: 1,
-    clipPath: "inset(0 0 0 0 round 8px)",
-    duration: 1,
-    zIndex: 10,
-    onComplete: () => {
-      console.log("complete");
-    },
+  const tl = gsap.timeline({
+    defaults: {
+      ease: "power2.out",
+      duration: 0.8,
+    }
   });
 
-  galleryTl.play();
+  gsap.set(nextImage, {
+    zIndex: 2,
+  });
+
+  tl.fromTo(
+    nextImage,
+    {
+      clipPath: "inset(12.5% 50% 12.5% 50% round 8px)",
+    },
+    {
+      clipPath: "inset(0% 0% 0% 0% round 8px)",
+      duration: 0.8,
+    }
+  );
+
+  tl.to(
+    currentImage,
+    {
+      scale: 1.05,
+      duration: 0.8,
+      onComplete: () => {
+        // Déplacer l'image à la fin du conteneur immédiatement après son animation
+        currentImage.parentNode.appendChild(currentImage);
+        // Reset l'image
+        gsap.set(currentImage, {
+          clipPath: "inset(12.5% 50% 12.5% 50% round 8px)",
+          scale: 1,
+          zIndex: 0,
+        });
+      }
+    },
+    "-=0.8"
+  );
 }
 
-// Écouteur d'événement sur le bouton
-nextButton.addEventListener('click', showNext);
+nextButton.addEventListener("click", showNext);
