@@ -1,3 +1,7 @@
+/*
+Animation des cta
+*/
+
 let btnWraps = document.querySelectorAll('.btn_wrap');
 
 btnWraps.forEach((btnWrap) => {
