@@ -1,116 +1,188 @@
-/*
-Animation menu - Code optimisé avec GSAP
-*/
-
-// Classe pour gérer les animations du menu
 class MenuAnimator {
   constructor() {
-    this.elements = {
-      menuOpen: document.querySelector(".menu-open_bg"),
-      navIco: document.querySelector(".ico_logo-main"),
-      menuBtn: document.querySelector(".menu-btn_wrap"),
-      main: document.querySelector(".blur-background"),
-      menuRightPanel: document.querySelector(".menu-open_right-col"),
-      menuRightItems: document.querySelectorAll(".menu-open_right-items"),
-      contactDiv: document.querySelector(".nav-contact_wrap"),
-      separatorDiv: document.querySelector(".separator"),
-      navItemsLeft: gsap.utils.toArray(document.querySelectorAll(".menu-left-col-item_wrap")),
-      menuDivider: document.querySelector(".menu_divider")
+    // Utilisation d'une promesse pour gérer le chargement du DOM de manière plus élégante
+    this.domReady = new Promise(resolve => {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', resolve);
+      } else {
+        resolve();
+      }
+    });
+
+    this.domReady.then(() => this.initialize());
+  }
+
+  initialize() {
+    // Définition des sélecteurs dans un objet séparé pour faciliter la maintenance
+    const selectors = {
+      menuOpen: ".menu-open_bg",
+      navIco: ".ico_logo-main",
+      menuBtn: ".menu-btn_wrap",
+      main: ".blur-background",
+      menuRightPanel: ".menu-open_right-col",
+      menuRightItems: ".menu-open_right-items",
+      contactDiv: ".nav_contact",
+      separatorDiv: ".separator",
+      navItemsLeft: ".menu-left-col-item_wrap",
+      menuDivider: ".menu_divider"
     };
 
+    // Initialisation des éléments avec gestion d'erreur
+    this.elements = Object.entries(selectors).reduce((acc, [key, selector]) => {
+      const element = key === 'menuRightItems' 
+        ? document.querySelectorAll(selector)
+        : key === 'navItemsLeft' 
+          ? gsap.utils.toArray(document.querySelectorAll(selector))
+          : document.querySelector(selector);
+
+      if (!element || (element instanceof NodeList && !element.length)) {
+        console.warn(`Element '${key}' with selector '${selector}' not found`);
+      }
+
+      acc[key] = element;
+      return acc;
+    }, {});
+
     this.isMenuOpen = false;
-    this.timeline = gsap.timeline({ paused: true });
+    this.timeline = gsap.timeline({ 
+      paused: true,
+      onComplete: () => this.isMenuOpen = true,
+      onReverseComplete: () => this.isMenuOpen = false
+    });
     this.mmNav = gsap.matchMedia();
     this.init();
   }
 
   createBaseAnimation(logoColor) {
-    this.timeline
-      .to(this.elements.menuOpen, {
+    if (!this.timeline) return;
+
+    const { 
+      menuOpen, contactDiv, separatorDiv, navIco, 
+      main, menuDivider, menuRightItems, navItemsLeft 
+    } = this.elements;
+
+    this.timeline.clear();
+    
+    // Animation principale avec vérification des éléments
+    if (menuOpen) {
+      this.timeline.to(menuOpen, {
         autoAlpha: 1,
-        duration: 1
-      })
-      .to([this.elements.contactDiv, this.elements.separatorDiv], {
+        duration: 1,
+        ease: "power2.inOut"
+      });
+    }
+
+    if (contactDiv && separatorDiv) {
+      this.timeline.to([contactDiv, separatorDiv], {
         autoAlpha: 0,
         duration: 1,
-        color: "#14171A"
-      }, 0)
-      .to(this.elements.navIco, {
+        color: "#14171A",
+      }, 0);
+    }
+
+    if (navIco) {
+      this.timeline.to(navIco, {
         duration: 1,
-        color: logoColor
-      }, 0)
-      .to(this.elements.main, {
+        color: logoColor,
+        ease: "power2.inOut"
+      }, 0);
+    }
+
+    if (main) {
+      this.timeline.to(main, {
         autoAlpha: 1,
         filter: "blur(10px) brightness(70%)",
-        duration: 0.5
-      }, 0)
-      .from(this.elements.menuDivider, {
+        duration: 0.5,
+        ease: "power2.inOut"
+      }, 0);
+    }
+
+    if (menuDivider) {
+      this.timeline.from(menuDivider, {
         scale: 0,
         autoAlpha: 0,
-        duration: 1
-      }, 1)
-      .to(this.elements.menuRightItems, {
+        duration: 1,
+        ease: "back.out(1.7)"
+      }, 1);
+    }
+
+    if (menuRightItems?.length) {
+      this.timeline.to(menuRightItems, {
         y: 0,
         autoAlpha: 1,
         duration: 0.5,
-        stagger: 0.2
-      }, 0)
-      .from(this.elements.navItemsLeft, {
+        stagger: 0.2,
+        ease: "power2.out"
+      }, 0);
+    }
+
+    if (navItemsLeft?.length) {
+      this.timeline.from(navItemsLeft, {
         y: 25,
         autoAlpha: 0,
         duration: 0.75,
-        stagger: 0.1
+        stagger: 0.1,
+        ease: "power2.out"
       }, 0);
+    }
   }
 
   toggleMenu = () => {
+    if (!this.timeline) return;
+    
     if (this.isMenuOpen) {
-      this.timeline.reverse(1);
+      this.timeline.reverse();
     } else {
       this.timeline.play();
     }
-    this.isMenuOpen = !this.isMenuOpen;
-  }
+  };
 
-  handleOutsideClick = (event) => {
-    if (
-      this.isMenuOpen &&
-      !this.elements.menuOpen.contains(event.target) &&
-      !this.elements.menuBtn.contains(event.target)
-    ) {
+  handleBlurBackgroundClick = (event) => {
+    if (this.isMenuOpen && event.target.classList.contains('blur-background')) {
       this.toggleMenu();
+    }
+  };
+
+  setupEventListeners() {
+    const { menuBtn, main } = this.elements;
+    
+    if (menuBtn) {
+      menuBtn.addEventListener("click", this.toggleMenu);
+    }
+    if (main) {
+      main.addEventListener("click", this.handleBlurBackgroundClick);
     }
   }
 
-  setupEventListeners() {
-    this.elements.menuBtn.addEventListener("click", this.toggleMenu);
-    document.addEventListener("click", this.handleOutsideClick);
-  }
-
   init() {
-    // Configuration initiale
-    gsap.set(this.elements.main, { filter: "blur(0px) brightness(100%)" });
+    const { main } = this.elements;
 
-    // Configuration desktop
-    this.mmNav.add("(min-width: 800px)", () => {
-      this.timeline.clear();
-      this.createBaseAnimation("#14171A");
-      this.setupEventListeners();
-    });
+    if (main) {
+      gsap.set(main, { filter: "blur(0px) brightness(100%)" });
+    }
 
-    // Configuration mobile
-    this.mmNav.add("(max-width: 799px)", () => {
-      this.timeline.clear();
-      this.createBaseAnimation("#fff");
+    const setupConfig = (color) => {
+      this.createBaseAnimation(color);
       this.setupEventListeners();
-    });
+    };
+
+    this.mmNav
+      .add("(min-width: 800px)", () => setupConfig("#14171A"))
+      .add("(max-width: 799px)", () => setupConfig("#fff"));
   }
 
-  // Méthode pour nettoyer les événements si nécessaire
   destroy() {
-    this.elements.menuBtn.removeEventListener("click", this.toggleMenu);
-    document.removeEventListener("click", this.handleOutsideClick);
-    this.timeline.kill();
+    const { menuBtn, main } = this.elements;
+
+    if (menuBtn) {
+      menuBtn.removeEventListener("click", this.toggleMenu);
+    }
+    if (main) {
+      main.removeEventListener("click", this.handleBlurBackgroundClick);
+    }
+    
+    this.timeline?.kill();
+    this.mmNav?.kill();
   }
 }
 

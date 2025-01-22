@@ -1,88 +1,145 @@
-/*
-Animation gsap du slider catégories en bas de page /home - Version optimisée
-*/
+gsap.registerPlugin(ScrollTrigger);
 
-let mm = gsap.matchMedia();
-
-// Configuration commune desktop et mobile
 const setupProjectAnimations = (isMobile = false) => {
-  // Configuration des points de déclenchement selon le device
   const triggerPoints = {
     image: isMobile ? "center center" : "top center",
     content: isMobile ? "center 60%" : "center center",
   };
 
-  // Tableau des sections de projet
   const sections = [1, 2, 3, 4, 5, 6, 7];
 
+  // Réinitialisation initiale
   sections.forEach((index) => {
-    // Sélection des éléments pour chaque section
+    const section = document.querySelector(`.project_item.${getNumberWord(index)}`);
+    if (!section) return;
+
+    // Initialiser l'opacité du heading-project à 0.2
+    gsap.set(section.querySelector('.heading-project'), {
+      opacity: 0.2
+    });
+    
+    // Initialiser la couleur du numéro en blanc
+    gsap.set(section.querySelector('.home_project-number'), {
+      color: "#FFFFFF"
+    });
+
+    // Initialiser la ligne
+    gsap.set(section.querySelector('.projects_divider.over'), {
+      width: "0%",
+      backgroundColor: "#FFFFFF"
+    });
+  });
+
+  sections.forEach((index) => {
+    const section = document.querySelector(`.project_item.${getNumberWord(index)}`);
+    if (!section) return;
+
     const elements = {
       img: document.querySelector(`.img_projects-${index}`),
-      title: document.querySelector(`.project_item.${getNumberWord(index)}`),
-      divider: document.querySelector(
-        `.project_item.${getNumberWord(index)} .projects_divider.over`
-      ),
+      heading: section.querySelector('.heading-project'),
+      number: section.querySelector('.home_project-number'),
+      divider: section.querySelector('.projects_divider.over')
     };
 
-    // Ajout du contenu du titre
-    elements.titleContent = elements.title.querySelectorAll("div");
-
-    // Configuration initiale de l'image
-    gsap.set(elements.img, {
-      clipPath: "inset(100% 0 0 0 round 8px)",
-      scale: 1.1,
-    });
+    if (!elements.img || !elements.heading || !elements.number || !elements.divider) return;
 
     // Animation de l'image
+    gsap.set(elements.img, {
+      clipPath: "inset(100% 0 0 0 round 8px)",
+      scale: 1.1
+    });
+
     gsap.to(elements.img, {
-      clipPath: "inset(0 0 0 0 round 8px)",
+      clipPath: "inset(0% 0 0 0 round 8px)",
       scale: 1,
+      duration: 0.6,
       scrollTrigger: {
-        trigger: `.project_item.${getNumberWord(index)}`,
+        trigger: section,
         start: triggerPoints.image,
-        toggleActions: "play reverse play reverse",
-      },
+        toggleActions: "play reverse play reverse"
+      }
     });
 
-    // Animation du titre
-    gsap.to(elements.titleContent, {
-      color: "#b4ff04",
-      opacity: 1,
-      scrollTrigger: {
-        trigger: `.project_item.${getNumberWord(index)}`,
-        start: triggerPoints.content,
-        end: "bottom 40%",
-        toggleActions: "play reverse play reverse",
+    // Animation du titre, du numéro et de la ligne
+    ScrollTrigger.create({
+      trigger: section,
+      start: triggerPoints.content,
+      end: "bottom 40%",
+      onEnter: () => {
+        gsap.to(elements.heading, {
+          opacity: 1,
+          duration: 0.4
+        });
+        gsap.to(elements.number, {
+          color: "#b4ff04",
+          duration: 0.4
+        });
+        gsap.to(elements.divider, {
+          width: "100%",
+          backgroundColor: "#b4ff04",
+          duration: 0.4
+        });
       },
-    });
-
-    // Animation du séparateur
-    gsap.to(elements.divider, {
-      color: "#b4ff04",
-      width: "100%",
-      duration: 1,
-      scrollTrigger: {
-        trigger: `.project_item.${getNumberWord(index)}`,
-        start: triggerPoints.content,
-        end: "bottom 40%",
-        toggleActions: "play reverse play reverse",
+      onLeave: () => {
+        gsap.to(elements.heading, {
+          opacity: 0.2,
+          duration: 0.4
+        });
+        gsap.to(elements.number, {
+          color: "#FFFFFF",
+          duration: 0.4
+        });
+        gsap.to(elements.divider, {
+          width: "0%",
+          backgroundColor: "#FFFFFF",
+          duration: 0.4
+        });
       },
+      onEnterBack: () => {
+        gsap.to(elements.heading, {
+          opacity: 1,
+          duration: 0.4
+        });
+        gsap.to(elements.number, {
+          color: "#b4ff04",
+          duration: 0.4
+        });
+        gsap.to(elements.divider, {
+          width: "100%",
+          backgroundColor: "#b4ff04",
+          duration: 0.4
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(elements.heading, {
+          opacity: 0.2,
+          duration: 0.4
+        });
+        gsap.to(elements.number, {
+          color: "#FFFFFF",
+          duration: 0.4
+        });
+        gsap.to(elements.divider, {
+          width: "0%",
+          backgroundColor: "#FFFFFF",
+          duration: 0.4
+        });
+      }
     });
   });
 };
 
-// Fonction utilitaire pour convertir les nombres en mots
+let mm = gsap.matchMedia();
+
+mm.add("(min-width: 800px)", () => {
+  setupProjectAnimations(false);
+});
+
+mm.add("(max-width: 799px)", () => {
+  setupProjectAnimations(true);
+});
+
 function getNumberWord(num) {
   const words = ["one", "two", "three", "four", "five", "six", "seven"];
   return words[num - 1];
 }
-
-// Application des animations selon le breakpoint
-mm.add("(min-width: 800px)", () => {
-  setupProjectAnimations(false); // Desktop
-});
-
-mm.add("(max-width: 799px)", () => {
-  setupProjectAnimations(true); // Mobile
-});
