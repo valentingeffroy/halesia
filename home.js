@@ -1,169 +1,148 @@
 /*
-Animation gsap page /home
+Animation gsap page /home - Gestion des animations de la page d'accueil
 */
 
-let mmHome = gsap.matchMedia();
+// Initialisation de matchMedia pour la gestion responsive
+const mmHome = gsap.matchMedia();
 
+// Fonction utilitaire pour créer l'animation du titre
+const createTitleAnimation = (topTitle, botTitle, yOffset) => {
+  gsap.set(topTitle, {
+    y: 0,
+    autoAlpha: 1,
+  });
+  gsap.set(botTitle, {
+    y: yOffset,
+    autoAlpha: 0,
+  });
+
+  const titleLoop = gsap.timeline({ repeat: -1, repeatDelay: 1 });
+
+  titleLoop
+    .fromTo(
+      topTitle,
+      {
+        y: 0,
+        autoAlpha: 1,
+      },
+      {
+        y: -yOffset,
+        autoAlpha: 0,
+        duration: 1.5,
+        ease: "expo.inOut",
+      }
+    )
+    .fromTo(
+      botTitle,
+      {
+        y: yOffset,
+      },
+      {
+        y: 0,
+        autoAlpha: 1,
+        color: "black",
+        duration: 1.5,
+        ease: "expo.inOut",
+      },
+      0
+    )
+    .yoyo(true);
+
+  return titleLoop;
+};
+
+// Fonction pour créer une animation au scroll
+const createScrollAnimation = (element, yStart, trigger, startPosition, scrubValue = 2) => {
+  return gsap.from(element, {
+    y: yStart,
+    scrollTrigger: {
+      trigger,
+      start: startPosition,
+      scrub: scrubValue,
+    },
+  });
+};
+
+// Configuration des animations pour les écrans larges (desktop)
 mmHome.add("(min-width: 800px)", () => {
+  // Sélection des éléments
+  const elements = {
+    hero: {
+      topTitle: document.querySelector(".title-loop-t"),
+      botTitle: document.querySelector(".title-loop-b"),
+    },
+    history: {
+      topTitle: document.querySelector(".history-title-loop-t"),
+      botTitle: document.querySelector(".history-title-loop-b"),
+      section: document.querySelector(".home-history_component"),
+      cards: gsap.utils.toArray(document.querySelectorAll(".history-card")),
+    },
+    products: {
+      section: document.querySelector(".home-product_component"),
+      cards: gsap.utils.toArray(document.querySelectorAll(".product-card_wrap")),
+    },
+  };
 
-  // Hero loop
-  let heroLoopWrap = document.querySelector('.loop_wrap');
-  let heroTopTitle = document.querySelector('.title-loop-t');
-  let heroBotTitle = document.querySelector('.title-loop-b');
+  // Animation du titre principal
+  createTitleAnimation(elements.hero.topTitle, elements.hero.botTitle, 80);
 
-  // Set initial states to prevent loading glitch
-  gsap.set(heroTopTitle, {
-    y: 0,
-    autoAlpha: 1,
+  // Animation du titre historique
+  const historyTitleLoop = gsap.timeline({
+    scrollTrigger: {
+      trigger: elements.history.topTitle,
+      start: "top 70%",
+      toggleActions: "play none none none",
+    },
   });
-  gsap.set(heroBotTitle, {
-    y: 80,
-    autoAlpha: 0, // Assumed, since no opacity is set later for heroBotTitle
+
+  historyTitleLoop
+    .to(elements.history.topTitle, {
+      y: "-100%",
+      duration: 1.25,
+      ease: "expo.inOut",
+    })
+    .to(
+      elements.history.botTitle,
+      {
+        y: "-100%",
+        color: "black",
+        duration: 1.25,
+        ease: "expo.inOut",
+      },
+      0
+    );
+
+  // Animation des cartes produits
+  elements.products.cards.forEach((card, index) => {
+    createScrollAnimation(
+      card,
+      (index + 1) * 200,
+      elements.products.section,
+      "top bottom"
+    );
   });
 
-  let heroTitleLoop = gsap.timeline({ repeat: -1, repeatDelay: 1 });
+  // Animation des cartes historiques
+  const historyYOffsets = [200, 100, 50];
+  elements.history.cards.forEach((card, index) => {
+    createScrollAnimation(
+      card,
+      historyYOffsets[index],
+      elements.history.section,
+      "top center"
+    );
+  });
+});
 
-  heroTitleLoop.fromTo(heroTopTitle, {
-    y: 0,
-    autoAlpha: 1,
-  }, {
-    y: -80,
-    autoAlpha: 0,
-    duration: 1.5,
-    ease: "expo.inOut",
-  })
-
-  heroTitleLoop.fromTo(heroBotTitle, {
-    y: 80,
-  }, {
-    autoAlpha: 1,
-    y: 0,
-    color: "black",
-    duration: 1.5,
-    ease: "expo.inOut",
-  }, 0)
-
-  heroTitleLoop.yoyo(true);
-
-  // History loop
-  let historyTopTitle = document.querySelector('.history-title-loop-t');
-  let historyBotTitle = document.querySelector('.history-title-loop-b');
-
-  let historyTitleLoop = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
-
-  historyTitleLoop.to(historyTopTitle, {
-    y: -80,
-    duration: 1.25,
-    ease: "expo.inOut",
-  })
-
-  historyTitleLoop.to(historyBotTitle, {
-    y: -60,
-    color: "black",
-    duration: 1.25,
-    ease: "expo.inOut",
-  }, 0)
-
-  historyTitleLoop.yoyo(true);
-
-  // JS Section Product
-  let productSection = document.querySelector(".home-product_component");
-  let productCards = gsap.utils.toArray(document.querySelectorAll(".product-card_wrap"));
-
-  gsap.from(productCards[0], {
-    y: 200,
-    scrollTrigger: {
-      trigger: productSection,
-      start: 'top bottom',
-      scrub: 2,
-    }
-  })
-  gsap.from(productCards[1], {
-    y: 400,
-    scrollTrigger: {
-      trigger: productSection,
-      start: 'top bottom',
-      scrub: 2,
-    }
-  })
-
-  // JS Section History
-  let historySection = document.querySelector(".home-history_component");
-  let historyCards = gsap.utils.toArray(document.querySelectorAll(".history-card"));
-
-  gsap.from(historyCards[0], {
-    y: 200,
-    scrollTrigger: {
-      trigger: historySection,
-      start: 'top center',
-      scrub: 2,
-    }
-  })
-  gsap.from(historyCards[1], {
-    y: 100,
-    scrollTrigger: {
-      trigger: historySection,
-      start: 'top center',
-      scrub: 2,
-    }
-  })
-  gsap.from(historyCards[2], {
-    y: 50,
-    scrollTrigger: {
-      trigger: historySection,
-      start: 'top center',
-      scrub: 2,
-    }
-  })
-
-  // JS Section Case Studies
-  let projectItem = gsap.utils.toArray(document.querySelectorAll(".project_item"));
-  let projectSection = document.querySelector(".home-casestudies_component");
-  let projectsImg = gsap.utils.toArray(document.querySelectorAll(".img_projects"));
-
-  // Light Animation
-  let homeIntro = document.querySelector(".home-intro_component");
-  let introLight = document.querySelector(".intro-light");
-
-})
-
+// Configuration des animations pour mobile
 mmHome.add("(max-width: 799px)", () => {
+  const elements = {
+    hero: {
+      topTitle: document.querySelector(".title-loop-t"),
+      botTitle: document.querySelector(".title-loop-b"),
+    },
+  };
 
-  // Hero loop
-  let heroLoopWrap = document.querySelector('.loop_wrap');
-  let heroTopTitle = document.querySelector('.title-loop-t');
-  let heroBotTitle = document.querySelector('.title-loop-b');
-
-  gsap.set(heroTopTitle, {
-    y: 0,
-    autoAlpha: 1,
-  });
-  gsap.set(heroBotTitle, {
-    y: 50,
-    autoAlpha: 0, 
-  });
-
-  let heroTitleLoop = gsap.timeline({ repeat: -1, repeatDelay: 1 });
-
-  heroTitleLoop.fromTo(heroTopTitle, {
-    y: 0,
-    autoAlpha: 1,
-  }, {
-    y: -50,
-    autoAlpha: 0,
-    duration: 1.5,
-    ease: "expo.inOut",
-  })
-
-  heroTitleLoop.fromTo(heroBotTitle, {
-    y: 50,
-  }, {
-    y: 0,
-    autoAlpha: 1,
-    color: "black",
-    duration: 1.5,
-    ease: "expo.inOut",
-  }, 0)
-
-  heroTitleLoop.yoyo(true);
-})
+  // Animation du titre principal adaptée pour mobile
+  createTitleAnimation(elements.hero.topTitle, elements.hero.botTitle, 50);
+});

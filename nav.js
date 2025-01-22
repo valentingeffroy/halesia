@@ -1,156 +1,118 @@
 /*
-Animation menu 
+Animation menu - Code optimisé avec GSAP
 */
 
-let mmNav = gsap.matchMedia();
+// Classe pour gérer les animations du menu
+class MenuAnimator {
+  constructor() {
+    this.elements = {
+      menuOpen: document.querySelector(".menu-open_bg"),
+      navIco: document.querySelector(".ico_logo-main"),
+      menuBtn: document.querySelector(".menu-btn_wrap"),
+      main: document.querySelector(".blur-background"),
+      menuRightPanel: document.querySelector(".menu-open_right-col"),
+      menuRightItems: document.querySelectorAll(".menu-open_right-items"),
+      contactDiv: document.querySelector(".nav-contact_wrap"),
+      separatorDiv: document.querySelector(".separator"),
+      navItemsLeft: gsap.utils.toArray(document.querySelectorAll(".menu-left-col-item_wrap")),
+      menuDivider: document.querySelector(".menu_divider")
+    };
 
-let menuOpen = document.querySelector(".menu-open_bg");
-let navIco = document.querySelector(".ico_logo-main");
-let menuBtn = document.querySelector(".menu-btn_wrap");
-let main = document.querySelector(".blur-background");
-let menuRightPanel = document.querySelector(".menu-open_right-col");
-let menuRightItems = document.querySelectorAll(".menu-open_right-items");
-let contactDiv = document.querySelector(".nav-contact_wrap");
-let separatorDiv = document.querySelector(".separator");
-let navItemsLeft = gsap.utils.toArray(document.querySelectorAll(".menu-left-col-item_wrap"));
-let menuDivider = document.querySelector(".menu_divider");
-
-let navTL = gsap.timeline({ paused: true });
-
-mmNav.add("(min-width: 800px)", () => {
-
-  navTL.to(menuOpen, {
-    autoAlpha: 1,
-    duration: 1,
-    //ease: "back.out(1.7)",
-  })
-
-  navTL.to([contactDiv, separatorDiv], {
-    autoAlpha: 0,
-    duration: 1,
-    color: "#14171A",
-    //ease: "globalEase",
-  }, 0)
-  navTL.to(navIco, {
-    duration: 1,
-    color: "#14171A",
-    //ease: "globalEase",
-  }, 0)
-
-  gsap.set(main, { filter: "blur(0px) brightness(100%)" });
-
-  navTL.to(main, {
-    autoAlpha: 1,
-    filter: "blur(10px) brightness(70%)",
-    duration: 0.5,
-  }, 0)
-  navTL.from(menuDivider, {
-    scale: 0,
-    autoAlpha: 0,
-    duration: 1,
-    //ease: "globalEase",
-  }, 1)
-  navTL.to(menuRightItems, {
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.5,
-    stagger: 0.2,
-    //ease: "globalEase",
-  }, 0)
-  navTL.from(navItemsLeft, {
-    y: 25,
-    autoAlpha: 0,
-    duration: 0.75,
-    stagger: 0.1,
-    //ease: "globalEase",
-  }, 0);
-
-  let isMenuOpen = false;
-
-  function toggleMenu() {
-    if (isMenuOpen) {
-      navTL.reverse(1);
-    } else {
-      navTL.play();
-    }
-    isMenuOpen = !isMenuOpen;
+    this.isMenuOpen = false;
+    this.timeline = gsap.timeline({ paused: true });
+    this.mmNav = gsap.matchMedia();
+    this.init();
   }
 
-  menuBtn.addEventListener("click", toggleMenu);
-
-  document.addEventListener('click', function (event) {
-    if (isMenuOpen &&
-      !menuOpen.contains(event.target) &&
-      !menuBtn.contains(event.target)) {
-      toggleMenu();
-    }
-  });
-
-});
-
-mmNav.add("(max-width: 799px)", () => {
-
-  navTL.to(menuOpen, {
-    autoAlpha: 1,
-    duration: 1,
-    ease: "back.out(1.7)",
-  })
-
-  navTL.to([contactDiv, separatorDiv], {
-    autoAlpha: 0,
-    duration: 1,
-    color: "#14171A",
-    // ease: "back.out(1.7)",
-  }, 0)
-
-  navTL.to(navIco, {
-    duration: 1,
-    color: "#fff",
-    // ease: "back.out(1.7)",
-  }, 0)
-
-  gsap.set(main, { filter: "blur(0px) brightness(100%)" });
-
-  navTL.to(main, {
-    autoAlpha: 1,
-    filter: "blur(10px) brightness(70%)",
-    duration: 0.5,
-  }, 0)
-
-  navTL.from(menuDivider, {
-    scale: 0,
-    autoAlpha: 0,
-    duration: 1,
-    // ease: "back.out(1.7)",
-  }, 1)
-
-  navTL.to(menuRightItems, {
-    y: 0,
-    autoAlpha: 1,
-    duration: 0.75,
-    stagger: 0.2,
-    // ease: "back.out(1.7)",
-  }, 0)
-
-  navTL.from(navItemsLeft, {
-    y: 25,
-    autoAlpha: 0,
-    duration: 0.75,
-    stagger: 0.1,
-    // ease: "back.out(1.7)",
-  }, 0);
-
-  let isMenuOpen = false;
-
-  function toggleMenu() {
-    if (isMenuOpen) {
-      navTL.reverse();
-    } else {
-      navTL.play();
-    }
-    isMenuOpen = !isMenuOpen;
+  createBaseAnimation(logoColor) {
+    this.timeline
+      .to(this.elements.menuOpen, {
+        autoAlpha: 1,
+        duration: 1
+      })
+      .to([this.elements.contactDiv, this.elements.separatorDiv], {
+        autoAlpha: 0,
+        duration: 1,
+        color: "#14171A"
+      }, 0)
+      .to(this.elements.navIco, {
+        duration: 1,
+        color: logoColor
+      }, 0)
+      .to(this.elements.main, {
+        autoAlpha: 1,
+        filter: "blur(10px) brightness(70%)",
+        duration: 0.5
+      }, 0)
+      .from(this.elements.menuDivider, {
+        scale: 0,
+        autoAlpha: 0,
+        duration: 1
+      }, 1)
+      .to(this.elements.menuRightItems, {
+        y: 0,
+        autoAlpha: 1,
+        duration: 0.5,
+        stagger: 0.2
+      }, 0)
+      .from(this.elements.navItemsLeft, {
+        y: 25,
+        autoAlpha: 0,
+        duration: 0.75,
+        stagger: 0.1
+      }, 0);
   }
 
-  menuBtn.addEventListener("click", toggleMenu);
+  toggleMenu = () => {
+    if (this.isMenuOpen) {
+      this.timeline.reverse(1);
+    } else {
+      this.timeline.play();
+    }
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
-});
+  handleOutsideClick = (event) => {
+    if (
+      this.isMenuOpen &&
+      !this.elements.menuOpen.contains(event.target) &&
+      !this.elements.menuBtn.contains(event.target)
+    ) {
+      this.toggleMenu();
+    }
+  }
+
+  setupEventListeners() {
+    this.elements.menuBtn.addEventListener("click", this.toggleMenu);
+    document.addEventListener("click", this.handleOutsideClick);
+  }
+
+  init() {
+    // Configuration initiale
+    gsap.set(this.elements.main, { filter: "blur(0px) brightness(100%)" });
+
+    // Configuration desktop
+    this.mmNav.add("(min-width: 800px)", () => {
+      this.timeline.clear();
+      this.createBaseAnimation("#14171A");
+      this.setupEventListeners();
+    });
+
+    // Configuration mobile
+    this.mmNav.add("(max-width: 799px)", () => {
+      this.timeline.clear();
+      this.createBaseAnimation("#fff");
+      this.setupEventListeners();
+    });
+  }
+
+  // Méthode pour nettoyer les événements si nécessaire
+  destroy() {
+    this.elements.menuBtn.removeEventListener("click", this.toggleMenu);
+    document.removeEventListener("click", this.handleOutsideClick);
+    this.timeline.kill();
+  }
+}
+
+// Initialisation
+const menuAnimator = new MenuAnimator();

@@ -1,16 +1,19 @@
 /*
-Animation composant [footer]
+Animation composant [footer] - Animation du logo dans le footer au scroll
 */
 
-let footer = document.querySelector(".global-footer");
-let footerLight = document.querySelector(".footer_logo");
+// Sélection des éléments du DOM
+let footer = document.querySelector(".global-footer"); // Conteneur du footer
+let footerLight = document.querySelector(".footer_logo"); // Logo du footer
 
+// Configuration de l'animation GSAP avec ScrollTrigger
 gsap.from(footerLight, {
-  opacity: 0.2,
-  duration: 1,
+  opacity: 0.2, // État initial : logo presque transparent
+  duration: 1, // Durée de l'animation : 1 seconde
   scrollTrigger: {
-    trigger: footer,
-    start: "top 30%",
-    toggleActions: 'play reverse play reverse',
-  }
-})
+    trigger: footerLight, // Élément déclencheur : le logo du footer
+    start: "20% 90%", // Démarrage quand 20% du logo est visible dans la fenêtre
+    end: "20% 90%", // Fin au même point pour un effet instantané
+    // toggleActions: "play reverse play reverse", // Comportement de l'animation au scroll
+  },
+});
