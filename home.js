@@ -75,7 +75,6 @@ mmHome.add("(min-width: 800px)", () => {
       topTitle: document.querySelector(".history-title-loop-t"),
       botTitle: document.querySelector(".history-title-loop-b"),
       section: document.querySelector(".home-history_component"),
-      cards: gsap.utils.toArray(document.querySelectorAll(".history-card")),
     },
     products: {
       section: document.querySelector(".home-product_component"),
@@ -119,17 +118,6 @@ mmHome.add("(min-width: 800px)", () => {
       (index + 1) * 200,
       elements.products.section,
       "top bottom"
-    );
-  });
-
-  // Animation des cartes historiques
-  const historyYOffsets = [200, 100, 50];
-  elements.history.cards.forEach((card, index) => {
-    createScrollAnimation(
-      card,
-      historyYOffsets[index],
-      elements.history.section,
-      "top center"
     );
   });
 });

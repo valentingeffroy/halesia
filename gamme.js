@@ -8,68 +8,47 @@ new Ukiyo(".ukiyo"); // Effet parallaxe global
 
 // 2. Animations Desktop (> 800px)
 mm.add("(min-width: 800px)", () => {
-// 2.1 Animation de la galerie light
-let galleryComp = document.querySelector(".gamme-gallery_component");
-let galleryLight = document.querySelector(".pattern-bg.is-gallery");
+  // Animation du marquee
+  const marqueeWrap = document.querySelector(".espace-marquee_wrap");
+  gsap.to(marqueeWrap, {
+    xPercent: -50,
+    ease: "none",
+    scrollTrigger: {
+      trigger: marqueeWrap,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: 1
+    }
+  });
 
-gsap.from(galleryLight, {
-  opacity: 0,
-  duration: 0.5,
-  scrollTrigger: {
-    trigger: galleryComp,
-    start: "top center",
-    toggleActions: "play reverse play reverse",
-  },
-});
+  // 2.1 Animation de la galerie light
+  let galleryComp = document.querySelector(".gamme-gallery_component");
+  let galleryLight = document.querySelector(".pattern-bg.is-gallery");
 
-// 2.2 Animation des cartes historiques avec effet parallaxe
-let historySection = document.querySelector(".home-history_component");
-let historyCards = gsap.utils.toArray(
-  document.querySelectorAll(".history-card")
-);
+  gsap.from(galleryLight, {
+    opacity: 0,
+    duration: 0.5,
+    scrollTrigger: {
+      trigger: galleryComp,
+      start: "top center",
+      toggleActions: "play reverse play reverse",
+    },
+  });
 
-// Animation différenciée pour chaque carte
-gsap.from(historyCards[0], {
-  y: 200, // Plus grand déplacement
-  scrollTrigger: {
-    trigger: historySection,
-    start: "top center",
-    scrub: 2, // Effet smooth au scroll
-  },
-});
+  // 2.3 Animation de la sous-navigation au contact
+  let contactSection = document.querySelector(".section-global.is-contact");
+  let subNav = document.querySelector(".gamme-hero_subnav");
 
-gsap.from(historyCards[1], {
-  y: 100, // Déplacement moyen
-  scrollTrigger: {
-    trigger: historySection,
-start: "top center",
-scrub: 2,
-  },
-});
-
-gsap.from(historyCards[2], {
-  y: 50, // Plus petit déplacement
-  scrollTrigger: {
-  trigger: historySection,
-start: "top center",
-scrub: 2,
-  },
-});
-
-// 2.3 Animation de la sous-navigation au contact
-let contactSection = document.querySelector(".section-global.is-contact");
-let subNav = document.querySelector(".gamme-hero_subnav");
-
-gsap.to(subNav, {
-  y: 100,
-  duration: 1,
-  ease: "globalEase",
-  scrollTrigger: {
-    trigger: contactSection,
-    start: "top center",
-    toggleActions: "play reverse play reverse",
-  },
-});
+  gsap.to(subNav, {
+    y: 100,
+    duration: 1,
+    ease: "globalEase",
+    scrollTrigger: {
+      trigger: contactSection,
+      start: "top center",
+      toggleActions: "play reverse play reverse",
+    },
+  });
 });
 
 // 3. Animation de la galerie d'images
