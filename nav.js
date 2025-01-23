@@ -1,6 +1,5 @@
 class MenuAnimator {
   constructor() {
-    // Utilisation d'une promesse pour gérer le chargement du DOM de manière plus élégante
     this.domReady = new Promise(resolve => {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', resolve);
@@ -13,7 +12,6 @@ class MenuAnimator {
   }
 
   initialize() {
-    // Définition des sélecteurs dans un objet séparé pour faciliter la maintenance
     const selectors = {
       menuOpen: ".menu-open_bg",
       navIco: ".ico_logo-main",
@@ -24,18 +22,17 @@ class MenuAnimator {
       contactDiv: ".nav_contact",
       separatorDiv: ".separator",
       navItemsLeft: ".menu-left-col-item_wrap",
-      menuDivider: ".menu_divider"
+      menuDivider: ".menu_divider",
+      burgerIconOpen: ".navbar_icon.open",
+      burgerIconClose: ".navbar_icon.close"
     };
 
-    // Initialisation des éléments avec gestion d'erreur
     this.elements = Object.entries(selectors).reduce((acc, [key, selector]) => {
-      const element = key === 'menuRightItems' 
-        ? document.querySelectorAll(selector)
-        : key === 'navItemsLeft' 
-          ? gsap.utils.toArray(document.querySelectorAll(selector))
-          : document.querySelector(selector);
+      const element = key === 'menuRightItems' || key === 'navItemsLeft'
+        ? gsap.utils.toArray(document.querySelectorAll(selector))
+        : document.querySelector(selector);
 
-      if (!element || (element instanceof NodeList && !element.length)) {
+      if (!element || (Array.isArray(element) && !element.length)) {
         console.warn(`Element '${key}' with selector '${selector}' not found`);
       }
 
@@ -49,6 +46,7 @@ class MenuAnimator {
       onComplete: () => this.isMenuOpen = true,
       onReverseComplete: () => this.isMenuOpen = false
     });
+    
     this.mmNav = gsap.matchMedia();
     this.init();
   }
@@ -58,16 +56,28 @@ class MenuAnimator {
 
     const { 
       menuOpen, contactDiv, separatorDiv, navIco, 
-      main, menuDivider, menuRightItems, navItemsLeft 
+      main, menuDivider, menuRightItems, navItemsLeft,
+      burgerIconOpen, burgerIconClose
     } = this.elements;
 
     this.timeline.clear();
+
+    if (burgerIconOpen && burgerIconClose) {
+      gsap.set(burgerIconOpen, { autoAlpha: 0 });
+      gsap.set(burgerIconClose, { autoAlpha: 1 });
+    }
+
+    if (menuRightItems?.length) {
+      gsap.set(menuRightItems, {
+        autoAlpha: 0,
+        y: -30
+      });
+    }
     
-    // Animation principale avec vérification des éléments
     if (menuOpen) {
       this.timeline.to(menuOpen, {
         autoAlpha: 1,
-        duration: 1,
+        duration: 0.8,
         ease: "power2.inOut"
       });
     }
@@ -75,14 +85,14 @@ class MenuAnimator {
     if (contactDiv && separatorDiv) {
       this.timeline.to([contactDiv, separatorDiv], {
         autoAlpha: 0,
-        duration: 1,
+        duration: 0.8,
         color: "#14171A",
       }, 0);
     }
 
     if (navIco) {
       this.timeline.to(navIco, {
-        duration: 1,
+        duration: 0.8,
         color: logoColor,
         ease: "power2.inOut"
       }, 0);
@@ -101,17 +111,17 @@ class MenuAnimator {
       this.timeline.from(menuDivider, {
         scale: 0,
         autoAlpha: 0,
-        duration: 1,
+        duration: 0.8,
         ease: "back.out(1.7)"
-      }, 1);
+      }, 0.8);
     }
 
     if (menuRightItems?.length) {
       this.timeline.to(menuRightItems, {
-        y: 0,
         autoAlpha: 1,
+        y: 0,
         duration: 0.5,
-        stagger: 0.2,
+        stagger: 0.15,
         ease: "power2.out"
       }, 0);
     }
@@ -120,26 +130,51 @@ class MenuAnimator {
       this.timeline.from(navItemsLeft, {
         y: 25,
         autoAlpha: 0,
-        duration: 0.75,
-        stagger: 0.1,
+        duration: 0.6,
+        stagger: 0.08,
         ease: "power2.out"
       }, 0);
     }
   }
 
+  updateBurgerIcons(isOpen) {
+    const { burgerIconOpen, burgerIconClose } = this.elements;
+    if (burgerIconOpen && burgerIconClose) {
+      gsap.set(burgerIconOpen, { autoAlpha: isOpen ? 1 : 0 });
+      gsap.set(burgerIconClose, { autoAlpha: isOpen ? 0 : 1 });
+    }
+  }
+
   toggleMenu = () => {
     if (!this.timeline) return;
+
+    if (this.timeline.isActive()) {
+      this.timeline.kill();
+    }
     
-    if (this.isMenuOpen) {
+    const isOpening = !this.isMenuOpen;
+    this.isMenuOpen = isOpening;
+    
+    this.updateBurgerIcons(isOpening);
+
+    if (!isOpening) {
+      this.timeline.timeScale(1.5);
       this.timeline.reverse();
     } else {
+      this.timeline.timeScale(1);
       this.timeline.play();
     }
   };
 
   handleBlurBackgroundClick = (event) => {
-    if (this.isMenuOpen && event.target.classList.contains('blur-background')) {
-      this.toggleMenu();
+    if (event.target.classList.contains('blur-background')) {
+      const { menuBtn } = this.elements;
+      if (menuBtn && this.isMenuOpen) {
+        if (this.timeline.isActive()) {
+          this.timeline.kill();
+        }
+        this.toggleMenu();
+      }
     }
   };
 
@@ -150,7 +185,7 @@ class MenuAnimator {
       menuBtn.addEventListener("click", this.toggleMenu);
     }
     if (main) {
-      main.addEventListener("click", this.handleBlurBackgroundClick);
+      main.addEventListener("mousedown", this.handleBlurBackgroundClick);
     }
   }
 
@@ -178,7 +213,7 @@ class MenuAnimator {
       menuBtn.removeEventListener("click", this.toggleMenu);
     }
     if (main) {
-      main.removeEventListener("click", this.handleBlurBackgroundClick);
+      main.removeEventListener("mousedown", this.handleBlurBackgroundClick);
     }
     
     this.timeline?.kill();
@@ -186,5 +221,4 @@ class MenuAnimator {
   }
 }
 
-// Initialisation
 const menuAnimator = new MenuAnimator();
