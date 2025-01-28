@@ -122,3 +122,33 @@ tl.to(
 
 // Écouteur d'événement pour le bouton suivant
 nextButton.addEventListener("click", showNext);
+
+
+
+gsap.to('.light-on', {
+  opacity: 1,
+  duration: 3,
+  ease: 'none'
+});
+
+
+// On définit d'abord l'opacité initiale à 0 pour les deux images
+gsap.set(['.is-02', '.is-03'], {
+  opacity: 0
+});
+
+// On crée une timeline pour séquencer les animations
+const tl = gsap.timeline({
+  defaults: {
+    duration: 3,
+    ease: 'none'
+  }
+});
+
+// On ajoute les animations à la timeline
+tl.to('.is-02', {
+    opacity: 1
+  })
+  .to('.is-03', {
+    opacity: 1
+  });
