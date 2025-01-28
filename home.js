@@ -65,7 +65,7 @@ gsap.to(".home_about-img.is-on", {
     // Point de départ : quand le centre du trigger atteint le centre de la viewport
     start: "center center",
     // Pour le debug (optionnel)
-    markers: true
+    // markers: true
   },
   // Animation de l'opacité de 0 à 1
   opacity: 1,
