@@ -32,20 +32,6 @@ gsap.to(lastNumb, {
   },
 });
 
-// 2. Animation du texte audio
-// Utilisation de SplitType pour diviser le texte en différentes parties
-let typeSplit = new SplitType("#audio-text", {
-  types: "lines, words, chars", // Division en lignes, mots et caractères
-  tagName: "span", // Utilisation de spans pour le découpage
-});
-
-// Animation de fade-in des mots
-gsap.from("#audio-text .word", {
-  opacity: 0.1, // Départ presque transparent
-  duration: 1.5, // Durée de l'animation
-  stagger: 0.25, // Délai entre chaque mot
-});
-
 // 3. Effet de parallaxe
 // Initialisation de l'effet parallaxe sur les éléments avec la classe .ukiyo
 new Ukiyo(".ukiyo"); // Première instance
