@@ -1,5 +1,5 @@
 // Vérifie si l'écran est en mode desktop (largeur > 991px)
-const isDesktop = window.matchMedia("(min-width: 991px)").matches;
+const isDesktop = window.matchMedia("(min-width: 1200px)").matches;
 
 // Ne lance les animations que si on est sur desktop
 if (isDesktop) {
